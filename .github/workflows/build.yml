@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir kernel_workspace && cd kernel_workspace
           repo init -u https://github.com/luyanci/kernel_manifest_oplus.git -b oneplus/sm8750 -m oneplus_ace_6.xml --depth=1
-          repo sync -C --no-tags --force-sync
+          repo sync -c --no-tags --force-sync
 
       - name: build
         run: |
