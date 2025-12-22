@@ -29,7 +29,7 @@ BBG: {BBG}
 Mountify support: {mountify}
 lz4+zstd: {zram}
 ```
-Please follow @gki_kernels_xiaoxiaow !
+Please follow @yc_op_Ace6_kbuild !
 """.strip()
 
 
