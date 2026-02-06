@@ -148,23 +148,15 @@ jobs:
       - name: Pack anykernel3
         run: |
          cd kernel_workspace/
-         git clone https://github.com/luyancib-org/Anykernel3 --depth=1
+         git clone https://github.com/kingmikhail/Anykernel3 --depth=1
          rm -rf Anykernel3/.git
          cp kernel_platform/common/out/arch/arm64/boot/Image.gz ./Anykernel3/Image.gz
          cd Anykernel3
-         zip -q -r "../AnyKernel3_Op_ACE6.zip" ./*
+         zip -q -r "../AnyKernel3-OP13.zip" ./*
 
       - name: Upload
         if: inputs.UPLOAD_TO_GH
         uses: actions/upload-artifact@v4
         with:
           name: Anykernel3
-          path: kernel_workspace/AnyKernel3_Op_ACE6.zip
-
-        env:
-          KSUVAR: ${{ github.event.inputs.KSU }}
-          SUSFS: ${{ github.event.inputs.SUSFS }}
-          BBG: ${{ github.event.inputs.BBG }}
-          mountify: ${{ github.event.inputs.mountify }}
-          zram: ${{ github.event.inputs.ZRAM }}
-          Fengchi: ${{ github.event.inputs.fengchi }}     
+          path: kernel_workspace/AnyKernel3-OP13.zip
