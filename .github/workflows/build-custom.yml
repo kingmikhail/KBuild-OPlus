@@ -161,20 +161,10 @@ jobs:
           name: Anykernel3
           path: kernel_workspace/AnyKernel3_Op_ACE6.zip
 
-      - name: Upload to telegram
-        run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            pip3 install telethon
-            python3 ./scripts/scripts/buildbot.py "./kernel_workspace/AnyKernel3_Op_ACE6.zip"
-          fi
         env:
-          CHATID: ${{secrets.CHATID}}
-          BOT_TOKEN: ${{secrets.BOT_TOKEN}}
-          MESSAGE_THREAD_ID: ${{secrets.MESSAGE_THREAD_ID}}
           KSUVAR: ${{ github.event.inputs.KSU }}
           SUSFS: ${{ github.event.inputs.SUSFS }}
           BBG: ${{ github.event.inputs.BBG }}
           mountify: ${{ github.event.inputs.mountify }}
           zram: ${{ github.event.inputs.ZRAM }}
-          Fengchi: ${{ github.event.inputs.fengchi }}
-         
+          Fengchi: ${{ github.event.inputs.fengchi }}     
