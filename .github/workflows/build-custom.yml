@@ -6,7 +6,7 @@ on:
         KSU:
           required: true
           type: choice
-          description: "选择KSU变体"
+          description: "KSU Forks"
           default: "RESUKISU"
           options:
             - 'KSU'
@@ -20,36 +20,36 @@ on:
         UPLOAD_TO_GH:
           required: true
           type: boolean
-          description: "上传至 Github Action(如果你跑得多的话就关掉，走TG上传)"
+          description: "Github Action(Turn Off If Frequently Run，Upload to Telegram)"
           default: true
         BBG:
           type: boolean
-          description: "启用 BBG"
+          description: "Enable BBG"
           default: false
         SUSFS:
           type: boolean
-          description: "启用 SUSFS"
+          description: "Enable SUSFS"
           default: false
         KPM:
           type: boolean
-          description: "启用 KPM (白名单限制启用)"
+          description: "Enable KPM"
           default: false
         mountify:
           type: boolean
-          description: "启用 Mountify 模块支持"
+          description: "Enable Mountify"
           default: false
         ZRAM:
           type: boolean
-          description: "使用 lz4 + zstd ZRAM补丁"
+          description: "Enable lZ4 + ZSTD ZRAM"
           default: false
         fengchi:
           type: boolean
-          description: "应用风驰补丁"
+          description: "Enable Fengchi Kernel"
           default: false
 jobs:
   Build-Kernel:
-    name: "Build kernel normal"
-    runs-on: ubuntu-latest
+    name: "Build Kernel Normal"
+     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
       CCACHE_NOHASHDIR: "true"
@@ -67,7 +67,7 @@ jobs:
           remove-haskell: 'true'
           remove-codeql: 'true'
 
-      - name: Restore ccache
+      - name: Restore Ccache
         uses: actions/cache@v3
         with:
           path: /home/runner/.ccache
@@ -86,7 +86,7 @@ jobs:
           chmod a+x ~/repo
           sudo mv ~/repo /usr/local/bin/repo
 
-      - name: sync
+      - name: Sync
         run: |
           mkdir kernel_workspace && cd kernel_workspace
           repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/sm8750 -m oneplus_13_b.xml --depth=1
@@ -103,12 +103,12 @@ jobs:
           sed -i '$s|echo "\$res"|echo "-ogki-${{github.actor}}"|' kernel_platform/msm-kernel/scripts/setlocalversion
           sed -i '$s|echo "\$res"|echo "-ogki-${{github.actor}}"|' kernel_platform/external/dtc/scripts/setlocalversion
 
-      - name: Get scripts
+      - name: Get Scripts
         uses: actions/checkout@v4
         with: 
           path: scripts
 
-      - name: Run configure
+      - name: Running Configure
         run: |
           cp ./scripts/scripts/configure ./kernel_workspace/
           chmod +x ./kernel_workspace/configure
@@ -148,33 +148,16 @@ jobs:
       - name: Pack anykernel3
         run: |
          cd kernel_workspace/
-         git clone https://github.com/luyancib-org/Anykernel3 --depth=1
+         git clone https://github.com/kingmikhail/Anykernel3 --depth=1
          rm -rf Anykernel3/.git
          cp kernel_platform/common/out/arch/arm64/boot/Image.gz ./Anykernel3/Image.gz
          cd Anykernel3
          zip -q -r "../AnyKernel3_Op_ACE6.zip" ./*
 
-      - name: Upload
+      - name: Upload To Github Actions
         if: inputs.UPLOAD_TO_GH
         uses: actions/upload-artifact@v4
         with:
           name: Anykernel3
           path: kernel_workspace/AnyKernel3_Op_ACE6.zip
-
-      - name: Upload to telegram
-        run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            pip3 install telethon
-            python3 ./scripts/scripts/buildbot.py "./kernel_workspace/AnyKernel3_Op_ACE6.zip"
-          fi
-        env:
-          CHATID: ${{secrets.CHATID}}
-          BOT_TOKEN: ${{secrets.BOT_TOKEN}}
-          MESSAGE_THREAD_ID: ${{secrets.MESSAGE_THREAD_ID}}
-          KSUVAR: ${{ github.event.inputs.KSU }}
-          SUSFS: ${{ github.event.inputs.SUSFS }}
-          BBG: ${{ github.event.inputs.BBG }}
-          mountify: ${{ github.event.inputs.mountify }}
-          zram: ${{ github.event.inputs.ZRAM }}
-          Fengchi: ${{ github.event.inputs.fengchi }}
-         
+      
