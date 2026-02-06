@@ -1,4 +1,4 @@
-name: Build Custom
+name: Build Custom OP
 
 on:
     workflow_dispatch:
