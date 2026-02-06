@@ -1,4 +1,4 @@
-name: build Custom
+name: Build Custom
 
 on:
     workflow_dispatch:
@@ -7,7 +7,7 @@ on:
           required: true
           type: choice
           description: "选择KSU变体"
-          default: "RKSU"
+          default: "RESUKISU"
           options:
             - 'KSU'
             - 'SUKISU'
@@ -21,7 +21,7 @@ on:
           required: true
           type: boolean
           description: "上传至 Github Action(如果你跑得多的话就关掉，走TG上传)"
-          default: true
+          default: false
         BBG:
           type: boolean
           description: "启用 BBG"
@@ -89,7 +89,7 @@ jobs:
       - name: sync
         run: |
           mkdir kernel_workspace && cd kernel_workspace
-          repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/sm8750 -m oneplus_ace_6.xml --depth=1
+          repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/sm8750 -m oneplus_13_b.xml --depth=1
           repo sync -c -j$(nproc --all) --no-tags --no-clone-bundle --force-sync
           rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
@@ -148,11 +148,11 @@ jobs:
       - name: Pack anykernel3
         run: |
          cd kernel_workspace/
-         git clone https://github.com/luyancib-org/Anykernel3 --depth=1
+         git clone https://github.com/kingmikhail/Anykernel3 --depth=1
          rm -rf Anykernel3/.git
          cp kernel_platform/common/out/arch/arm64/boot/Image.gz ./Anykernel3/Image.gz
          cd Anykernel3
-         zip -q -r "../AnyKernel3_Op_ACE6.zip" ./*
+         zip -q -r "../AnyKernel3-OP13.zip" ./*
 
       - name: Upload
         if: inputs.UPLOAD_TO_GH
@@ -160,13 +160,7 @@ jobs:
         with:
           name: Anykernel3
           path: kernel_workspace/AnyKernel3_Op_ACE6.zip
-
-      - name: Upload to telegram
-        run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
-            pip3 install telethon
-            python3 ./scripts/scripts/buildbot.py "./kernel_workspace/AnyKernel3_Op_ACE6.zip"
-          fi
+        fi
         env:
           CHATID: ${{secrets.CHATID}}
           BOT_TOKEN: ${{secrets.BOT_TOKEN}}
