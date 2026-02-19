@@ -14,7 +14,7 @@ on:
             - 'NEXT'
             - 'WILD'
             - 'RKSU'
-            - 'YCRKSU'
+            - 'MAMBOSU'
             - 'XXKSU'
             - 'RESUKISU'
         UPLOAD_TO_GH:
@@ -39,9 +39,13 @@ on:
           description: "启用 Mountify 模块支持"
           default: false
         ZRAM:
-          type: boolean
-          description: "使用 lz4 + zstd ZRAM补丁"
-          default: false
+          type: choice
+          description: "使用 ZRAM 补丁"
+          default: "DISABLE"
+          options:
+            - 'DISABLE'
+            - 'LZ4'
+            - 'LZ4KD'
         fengchi:
           type: boolean
           description: "应用风驰补丁"
@@ -126,8 +130,8 @@ jobs:
           if [ "${{ github.event.inputs.mountify }}" == "true" ]; then
             ARGS+=" --mountify"
           fi
-          if [ "${{ github.event.inputs.ZRAM }}" == "true" ]; then
-            ARGS+=" --zram"
+          if [ "${{ github.event.inputs.ZRAM }}" != "DISABLE" ]; then
+            ARGS+=" --zram ${{ github.event.inputs.ZRAM }}"
           fi
           if [ "${{ github.event.inputs.fengchi }}" == "true" ]; then
             ARGS+=" --fengchi"
